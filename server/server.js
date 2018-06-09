@@ -1,13 +1,11 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
-const publicPath = path.join(__dirname + '/../public');
-
-const {generateMessage} = require('./utils/message');
-
-const port = process.env.PORT || 3000;
-
 const SocketIO = require('socket.io');
+
+const publicPath = path.join(__dirname + '/../public');
+const {generateMessage} = require('./utils/message');
+const port = process.env.PORT || 3000;
 
 let app = express();
 let server = http.createServer(app);
@@ -22,9 +20,10 @@ io.on('connection', (socket) => {
 
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'));
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         io.emit('newMessage', generateMessage(message.from, message.text));
+        callback('This is from the Server.JS file');
     });
 
     socket.on('disconnect', () => {
